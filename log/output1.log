@@ -1,0 +1,4 @@
+[app]: 2024/11/23 20:32:26.828319 log1.go:42: Alice login, age:18
+[app]: 2024/11/23 20:32:26.828474 log1.go:43: Hello, Alice
+[new]: 2024/11/23 20:32:26.828479 log1.go:47: Hello, Alice
+[logger]: 2024/11/23 20:32:26 log1.go:57: Alice login, age:18
