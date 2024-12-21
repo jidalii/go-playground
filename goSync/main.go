@@ -356,6 +356,63 @@ func PoolExample(workNum int) {
 //*                           Cond                             *//
 //*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*//
 
+func CondBroadcastExample() {
+	mutex := sync.Mutex{}
+	c := sync.NewCond(&mutex)
+	wg := sync.WaitGroup{}
+
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			c.L.Lock()
+			fmt.Printf("Goroutine %d: waiting...\n", id)
+			c.Wait()
+			fmt.Printf("Goroutine %d: started!\n", id)
+			c.L.Unlock()
+		}(i)
+	}
+
+	time.Sleep(2 * time.Second)
+	c.Broadcast()
+	wg.Wait()
+}
+
+func CondSignalExample() {
+	mutex := sync.Mutex{}
+	c := sync.NewCond(&mutex)
+	wg := sync.WaitGroup{}
+
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			// Acquire lock before waiting
+			c.L.Lock()
+			fmt.Printf("Goroutine %d: waiting...\n", id)
+			// Release lock and wait for signal
+			c.Wait()
+
+			// After receiving signal, lock is reacquired
+			fmt.Printf("Goroutine %d: started at %s!\n",
+				id,
+				time.Now().Format("15:04:05.999"),
+			)
+			// Simulate work
+			time.Sleep(1 * time.Second)
+			c.L.Unlock()
+
+			// Signal next goroutine to proceed
+			c.Signal()
+		}(i)
+	}
+
+	time.Sleep(2 * time.Second)
+	// Signal first goroutine to start
+	c.Signal()
+	wg.Wait()
+}
+
 // ********** Producer-Consumer with Cond **********
 
 func producer(ctx context.Context, id int, c *sync.Cond) error {
@@ -525,8 +582,10 @@ func main() {
 	// PoolExample(1000)
 
 	// Cond
-	ProducerSingleConsumer()
-	ProducerMultiConsumers()
-	PubMultiSub()
-	CondExampleWithPizzaRace()
+	// CondBroadcastExample()
+	CondSignalExample()
+	// ProducerSingleConsumer()
+	// ProducerMultiConsumers()
+	// PubMultiSub()
+	// CondExampleWithPizzaRace()
 }
