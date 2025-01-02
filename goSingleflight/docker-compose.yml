@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis_test
+    ports:
+      - "6379:6379" # Map Redis port to the host
+
+  go_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: go_test
+    depends_on:
+      - redis # Ensure Redis starts before the Go app
+    environment:
+      - REDIS_ADDR=redis:6379 # Use the Redis service name as the hostname
