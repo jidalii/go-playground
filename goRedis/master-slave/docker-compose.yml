@@ -1,0 +1,79 @@
+version: '3'
+services:
+  master:
+    build: ./master
+    ports:
+      - "6379:6379"
+    networks:
+      - master-slave-network
+    volumes:
+      - ./data/master:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "master-secret", "ping"]
+      interval: 5s
+      retries: 5
+    environment:
+      REDISCLI_AUTH: "master-secret"
+
+  slave1:
+    build: ./slave
+    ports:
+      - "6381:6379"
+    depends_on:
+      master:
+        condition: service_healthy
+    networks:
+      - master-slave-network
+    volumes:
+      - ./data/slave1:/data
+    restart: always
+    command: ["redis-server", "--replicaof", "master", "6379", "--masterauth", "master-secret", "--repl-backlog-size", "10mb"]
+
+  slave2:
+    build: ./slave
+    ports:
+      - "6382:6379"
+    depends_on:
+      master:
+        condition: service_healthy
+    networks:
+      - master-slave-network
+    volumes:
+      - ./data/slave2:/data
+    restart: always
+    command: ["redis-server", "--replicaof", "master", "6379", "--masterauth", "master-secret", "--repl-backlog-size", "10mb"]
+
+  slave3:
+    build: ./slave
+    ports:
+      - "6383:6379"
+    depends_on:
+      master:
+        condition: service_healthy
+    networks:
+      - master-slave-network
+    volumes:
+      - ./data/slave3:/data
+    restart: always
+    command: ["redis-server", "--replicaof", "master", "6379", "--masterauth", "master-secret", "--repl-backlog-size", "10mb"]
+
+
+  slave4:
+    build: ./slave
+    ports:
+      - "6384:6379"
+    depends_on:
+      master:
+        condition: service_healthy
+    networks:
+      - master-slave-network
+    volumes:
+      - ./data/slave4:/data
+    restart: always
+    command: ["redis-server", "--replicaof", "master", "6379", "--masterauth", "master-secret", "--repl-backlog-size", "10mb"]
+
+
+networks:
+  master-slave-network:
+    driver: bridge
+  
