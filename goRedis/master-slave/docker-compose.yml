@@ -1,6 +1,7 @@
 version: '3'
 services:
   master:
+    container_name: master
     build: ./master
     ports:
       - "6379:6379"
@@ -27,7 +28,7 @@ services:
     volumes:
       - ./data/slave1:/data
     restart: always
-    command: ["redis-server", "--replicaof", "master", "6379", "--masterauth", "master-secret", "--repl-backlog-size", "10mb"]
+    command: ["redis-server"]
 
   slave2:
     build: ./slave
@@ -41,7 +42,7 @@ services:
     volumes:
       - ./data/slave2:/data
     restart: always
-    command: ["redis-server", "--replicaof", "master", "6379", "--masterauth", "master-secret", "--repl-backlog-size", "10mb"]
+    command: ["redis-server"]
 
   slave3:
     build: ./slave
@@ -55,7 +56,7 @@ services:
     volumes:
       - ./data/slave3:/data
     restart: always
-    command: ["redis-server", "--replicaof", "master", "6379", "--masterauth", "master-secret", "--repl-backlog-size", "10mb"]
+    command: ["redis-server"]
 
 
   slave4:
@@ -70,7 +71,7 @@ services:
     volumes:
       - ./data/slave4:/data
     restart: always
-    command: ["redis-server", "--replicaof", "master", "6379", "--masterauth", "master-secret", "--repl-backlog-size", "10mb"]
+    command: ["redis-server"]
 
 
 networks:
